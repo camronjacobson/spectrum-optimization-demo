@@ -6,7 +6,7 @@ This repository demonstrates a Python tool for optimizing radio frequency assign
 
 ## 📂 Included Files
 
-### spectrum_data.py
+### synthetic.py
 
 - The main Python script for running the optimization.
 - Loads station data from the CSV file.
@@ -28,6 +28,8 @@ This repository demonstrates a Python tool for optimizing radio frequency assign
 - This file will eventually be replaced with real data
 
 ---
+### frequency_assignments.csp
+-output file 
 
 ## ▶️ How to Run
 
