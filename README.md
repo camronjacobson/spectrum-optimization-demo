@@ -25,7 +25,7 @@ This repository demonstrates a Python tool for optimizing radio frequency assign
   - Azimuth
   - Elevation
   - Bandwidth
-- You can replace this file with your own data for different test scenarios.
+- This file will eventually be replaced with real data
 
 ---
 
