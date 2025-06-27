@@ -6,7 +6,7 @@ This repository demonstrates a Python tool for optimizing radio frequency assign
 
 ## 📂 Included Files
 
-### synthetic.py
+### synthetic_data.py
 
 - The main Python script for running the optimization.
 - Loads station data from the CSV file.
