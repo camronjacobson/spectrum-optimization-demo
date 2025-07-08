@@ -13,12 +13,57 @@ This repository is private and intended for internal use only.
 
 ## How to Set Up
 
-Make sure you have Python 3.8 or newer installed.
+This project uses an Anaconda environment for easy installation.
 
-### Install required Python libraries:
+---
+
+### 1. Install Anaconda (if needed)
+
+Download and install Anaconda:
+
+[Download Anaconda here.](https://www.anaconda.com/products/distribution)
+
+---
+
+### 2. Clone the Repository
+
+If you haven’t already:
 
 ```bash
-pip install pandas numpy matplotlib seaborn ortools networkx scipy
+git clone <your-private-repo-url>
+cd spectrum-optimization-demo
+```
+
+---
+
+### 3. Create the Environment
+
+Run the following command in the repo folder:
+
+```bash
+conda env create -f environment.yml
+```
+
+---
+
+### 4. Activate the Environment
+
+Activate the environment:
+
+```bash
+conda activate spectrum-opt-env
+```
+
+✅ Now you’re ready to run the optimizer and analyzer scripts!
+
+---
+
+### Updating the Environment
+
+If `environment.yml` changes, update your environment with:
+
+```bash
+conda env update -f environment.yml --prune
 ```
 
 ---
