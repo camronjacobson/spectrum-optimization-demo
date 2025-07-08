@@ -1,0 +1,15 @@
+name: spectrum-opt-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pandas
+  - numpy
+  - matplotlib
+  - seaborn
+  - networkx
+  - scipy
+  - pip
+  - pip:
+      - ortools
+
