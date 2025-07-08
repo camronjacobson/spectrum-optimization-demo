@@ -54,7 +54,7 @@ Activate the environment:
 conda activate spectrum-opt-env
 ```
 
-✅ Now you’re ready to run the optimizer and analyzer scripts!
+Now you’re ready to run the optimizer and analyzer scripts!
 
 ---
 
@@ -137,10 +137,10 @@ find_optimization_issues(results_df)
 
 ## What You’ll Get
 
-✅ A CSV with all stations and their assigned frequencies  
-✅ Plots showing how spectrum is divided among stations  
-✅ Summaries of spectrum usage and efficiency  
-✅ Warnings if stations might still overlap
+ A CSV with all stations and their assigned frequencies  
+ Plots showing how spectrum is divided among stations  
+ Summaries of spectrum usage and efficiency  
+ Warnings if stations might still overlap
 
 ---
 
@@ -151,6 +151,4 @@ find_optimization_issues(results_df)
 
 ---
 
-## Confidentiality
 
-This code and all related files are proprietary and confidential. Do not distribute outside the organization without permission.
