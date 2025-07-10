@@ -4,6 +4,7 @@ import networkx as nx
 from ortools.sat.python import cp_model
 from scipy.spatial import cKDTree
 import matplotlib.pyplot as plt
+import bea_mapper
 import math
 import time
 from datetime import datetime
@@ -254,10 +255,11 @@ def check_antenna_interference(row1, row2, azimuth_threshold=AZIMUTH_THRESHOLD_D
     return az_diff < azimuth_threshold and elev_diff < elevation_threshold
 
 
+# ===== FIXED VERSION OF build_global_conflict_matrix =====
 def build_global_conflict_matrix(df, use_spatial_index=None):
     """
     Builds a global conflict matrix for all stations across all clusters.
-    Enhanced with spatial indexing for large datasets and proper distance calculation.
+    FIXED: Proper index handling for spatial indexing.
     """
     start_time = time.time()
     n_stations = len(df)
@@ -270,10 +272,12 @@ def build_global_conflict_matrix(df, use_spatial_index=None):
     logger.info(f"Using spatial indexing: {use_spatial_index}")
     
     conflicts = {}
-    indices = df.index.tolist()
-    valid_indices = set(indices)  # For quick lookup
     
     if use_spatial_index:
+        # CRITICAL FIX: Create proper index mappings
+        position_to_index = {i: idx for i, idx in enumerate(df.index)}
+        index_to_position = {idx: i for i, idx in enumerate(df.index)}
+        
         # Use KD-tree for efficient neighbor search
         coords = np.radians(df[["y_coord", "x_coord"]].values)
         tree = cKDTree(coords)
@@ -284,22 +288,15 @@ def build_global_conflict_matrix(df, use_spatial_index=None):
         
         checked_pairs = set()
         
-        for i, idx_i in enumerate(indices):
+        for pos_i, idx_i in position_to_index.items():
             # Find potential neighbors within max threshold
-            neighbors_idx = tree.query_ball_point(coords[i], angular_threshold)
+            neighbors_positions = tree.query_ball_point(coords[pos_i], angular_threshold)
             
-            for j_idx in neighbors_idx:
-                if j_idx <= i:
+            for pos_j in neighbors_positions:
+                if pos_j <= pos_i:
                     continue
                 
-                if j_idx >= len(indices):  # Bounds check
-                    continue
-                    
-                idx_j = indices[j_idx]
-                
-                # Ensure both indices are valid
-                if idx_i not in valid_indices or idx_j not in valid_indices:
-                    continue
+                idx_j = position_to_index[pos_j]
                 
                 pair = (min(idx_i, idx_j), max(idx_i, idx_j))
                 if pair in checked_pairs:
@@ -327,14 +324,12 @@ def build_global_conflict_matrix(df, use_spatial_index=None):
     
     else:
         # Fallback to pairwise comparison for smaller datasets
-        for i, idx_i in enumerate(indices):
+        indices = list(df.index)
+        for i in range(len(indices)):
             for j in range(i + 1, len(indices)):
+                idx_i = indices[i]
                 idx_j = indices[j]
                 
-                # Ensure both indices are valid
-                if idx_i not in valid_indices or idx_j not in valid_indices:
-                    continue
-                    
                 row1 = df.loc[idx_i]
                 row2 = df.loc[idx_j]
                 
@@ -357,14 +352,11 @@ def build_global_conflict_matrix(df, use_spatial_index=None):
     return conflicts
 
 
-# --------------------------
-# PARTITIONING WITH PERFORMANCE OPTIMIZATION
-# --------------------------
-
+# ===== FIXED VERSION OF partition_and_optimize =====
 def partition_and_optimize(df, license_bands=None):
     """
     Partitions dataset into independent connected components and optimizes each.
-    Enhanced with better handling of large components.
+    FIXED: Handles ALL stations including isolated ones.
     """
     logger.info("\n🔗 Partitioning global conflict graph...")
     
@@ -377,20 +369,25 @@ def partition_and_optimize(df, license_bands=None):
     
     # Build graph from conflicts
     G = nx.Graph()
-    G.add_nodes_from(df.index)
+    G.add_nodes_from(df.index)  # Add ALL stations
     
     for (i, j) in global_conflicts.keys():
         G.add_edge(i, j)
     
-    # Find connected components
+    # Find connected components (including single-node components)
     components = list(nx.connected_components(G))
     logger.info(f"✅ Found {len(components)} independent conflict zones")
+    
+    # Count isolated stations
+    isolated_count = sum(1 for comp in components if len(comp) == 1)
+    if isolated_count > 0:
+        logger.info(f"   Including {isolated_count} isolated stations with no conflicts")
     
     # Sort components by size for better progress tracking
     components = sorted(components, key=len, reverse=True)
     
     optimized_chunks = []
-    failed_components = []
+    failed_stations = []  # Track individual failed stations
     
     for i, component in enumerate(components):
         component_size = len(component)
@@ -398,6 +395,19 @@ def partition_and_optimize(df, license_bands=None):
                    f"with {component_size} stations")
         
         df_component = df.loc[list(component)].copy()
+        
+        # NEW: Handle single stations with no conflicts
+        if component_size == 1:
+            station_idx = list(component)[0]
+            bandwidth = df_component.loc[station_idx, 'bandwidth_mhz']
+            
+            # Simple assignment at the beginning of spectrum
+            df_component.loc[station_idx, 'optimized_start_freq_mhz'] = GLOBAL_LOW_FREQ
+            df_component.loc[station_idx, 'optimized_end_freq_mhz'] = GLOBAL_LOW_FREQ + bandwidth
+            df_component.loc[station_idx, 'allocation_method'] = 'No_Conflicts'
+            
+            optimized_chunks.append(df_component)
+            continue
         
         # Check if we need special handling for large components
         if component_size > MAX_STATIONS_PER_COMPONENT:
@@ -419,16 +429,136 @@ def partition_and_optimize(df, license_bands=None):
             result_chunks = cross_band_coordination(df_component, license_bands)
             if result_chunks:
                 optimized_chunks.extend(result_chunks)
+                continue
             else:
-                failed_components.append(i)
-                logger.warning(f"⚠️ Conflict group {i+1} could not be optimized")
+                result = None
+        
+        if result is not None:
+            optimized_chunks.append(result)
+        else:
+            # NEW: Track failed stations individually
+            failed_stations.extend(list(component))
+            logger.warning(f"⚠️ Conflict group {i+1} could not be optimized")
+    
+    # NEW: Final attempt for failed stations with extended spectrum
+    if failed_stations:
+        logger.info(f"\n🔄 Attempting recovery for {len(failed_stations)} failed stations...")
+        failed_df = df.loc[failed_stations].copy()
+        
+        # Try with extended spectrum range
+        extended_result = global_spectrum_optimization_extended(failed_df, global_conflicts)
+        if extended_result is not None:
+            optimized_chunks.append(extended_result)
+        else:
+            logger.error(f"❌ Could not optimize {len(failed_stations)} stations even with extended spectrum")
     
     if optimized_chunks:
         result_df = pd.concat(optimized_chunks, ignore_index=True)
+        logger.info(f"\n✅ Successfully optimized {len(result_df)}/{len(df)} stations")
+        
+        # NEW: Validation check
+        if len(result_df) < len(df):
+            missing = set(df.index) - set(result_df.index)
+            logger.warning(f"⚠️ Missing stations: {missing}")
+        
         return result_df
     else:
         logger.error("⚠️ No feasible solutions found in any partition")
         return None
+
+
+# ===== NEW FUNCTION: Extended spectrum optimization =====
+def global_spectrum_optimization_extended(df, global_conflicts, extension_factor=2.0):
+    """
+    Try optimization with extended spectrum range for failed stations.
+    NEW FUNCTION to handle difficult cases.
+    """
+    logger.info("\n🌍 Attempting extended spectrum optimization...")
+    
+    # Extend the spectrum range
+    extended_low = GLOBAL_LOW_FREQ
+    extended_high = GLOBAL_LOW_FREQ + (GLOBAL_HIGH_FREQ - GLOBAL_LOW_FREQ) * extension_factor
+    
+    global_channels = np.arange(extended_low, extended_high, CHANNEL_STEP)
+    global_channels = np.round(global_channels, 1)
+    
+    logger.info(f"📡 Extended spectrum pool: {len(global_channels)} channels "
+               f"({extended_low}-{extended_high} MHz)")
+    
+    # Use same logic as global_spectrum_optimization but with extended range
+    model = cp_model.CpModel()
+    
+    # Calculate slots required for each station
+    slots_required = {}
+    for idx in df.index:
+        bandwidth = df.loc[idx, "bandwidth_mhz"]
+        slots = int(np.ceil(bandwidth / CHANNEL_STEP))
+        slots_required[idx] = slots
+    
+    # Channel assignment variables
+    channel_vars = {}
+    for idx in df.index:
+        max_start = len(global_channels) - slots_required[idx]
+        if max_start < 0:
+            logger.error(f"❌ Station {df.loc[idx, 'station_id']} requires more bandwidth than extended range")
+            return None
+        var = model.NewIntVar(0, max_start, f"extended_chan_{idx}")
+        channel_vars[idx] = var
+    
+    # Add conflict constraints
+    for (i_idx, j_idx) in global_conflicts:
+        if i_idx not in df.index or j_idx not in df.index:
+            continue
+        
+        slots_i = slots_required[i_idx]
+        slots_j = slots_required[j_idx]
+        
+        bool_var = model.NewBoolVar(f"extended_i_before_j_{i_idx}_{j_idx}")
+        model.Add(channel_vars[i_idx] + slots_i <= channel_vars[j_idx]).OnlyEnforceIf(bool_var)
+        model.Add(channel_vars[j_idx] + slots_j <= channel_vars[i_idx]).OnlyEnforceIf(bool_var.Not())
+    
+    # Ensure all stations fit
+    for idx in df.index:
+        model.Add(channel_vars[idx] + slots_required[idx] <= len(global_channels))
+    
+    # Objective: minimize total spectrum usage
+    max_channel_var = model.NewIntVar(0, len(global_channels), "extended_max_channel")
+    for idx in df.index:
+        model.Add(max_channel_var >= channel_vars[idx] + slots_required[idx])
+    model.Minimize(max_channel_var)
+    
+    # Solve
+    solver = cp_model.CpSolver()
+    solver.parameters.max_time_in_seconds = SOLVER_TIMEOUT
+    solver.parameters.num_search_workers = 8
+    
+    status = solver.Solve(model)
+    
+    if status not in [cp_model.OPTIMAL, cp_model.FEASIBLE]:
+        logger.error("❌ No feasible solution even with extended spectrum")
+        return None
+    
+    # Extract results
+    assigned_start_freqs = []
+    assigned_end_freqs = []
+    
+    for idx in df.index:
+        chan_idx = solver.Value(channel_vars[idx])
+        start_freq = global_channels[chan_idx]
+        slots = slots_required[idx]
+        end_idx = chan_idx + slots
+        end_freq = global_channels[min(end_idx, len(global_channels)-1)]
+        assigned_start_freqs.append(start_freq)
+        assigned_end_freqs.append(end_freq)
+    
+    df_result = df.copy()
+    df_result["optimized_start_freq_mhz"] = assigned_start_freqs
+    df_result["optimized_end_freq_mhz"] = assigned_end_freqs
+    df_result["allocation_method"] = "Extended_Spectrum"
+    
+    logger.info(f"✅ Extended spectrum optimization successful!")
+    
+    return df_result
 
 
 # --------------------------
@@ -470,87 +600,125 @@ def hierarchical_optimization(df_component, global_conflicts, license_bands):
     return greedy_frequency_assignment(df_component, global_conflicts)
 
 
-# --------------------------
-# GREEDY FREQUENCY ASSIGNMENT (HEURISTIC)
-# --------------------------
-
+# ===== FIXED VERSION OF greedy_frequency_assignment =====
 def greedy_frequency_assignment(df_component, conflicts):
     """
     Fast heuristic for very large problems where optimal solution is too slow.
-    Assigns frequencies greedily based on bandwidth requirements.
+    FIXED: Tries harder to assign all stations, doesn't drop any.
     """
     logger.info("Using greedy heuristic for frequency assignment")
     
-    # Sort stations by bandwidth (largest first)
-    df_sorted = df_component.sort_values('bandwidth_mhz', ascending=False).copy()
+    # Sort stations by bandwidth (largest first) and then by number of conflicts
+    conflict_counts = {}
+    for idx in df_component.index:
+        count = 0
+        for (i, j) in conflicts:
+            if i == idx or j == idx:
+                count += 1
+        conflict_counts[idx] = count
+    
+    # Sort by bandwidth descending, then by conflicts ascending
+    df_sorted = df_component.copy()
+    df_sorted['conflict_count'] = df_sorted.index.map(conflict_counts)
+    df_sorted = df_sorted.sort_values(['bandwidth_mhz', 'conflict_count'],
+                                      ascending=[False, True])
     
     # Track assigned frequencies
     assigned_freqs = {}
+    failed_assignments = []
     
-    # Available channels
-    channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ, CHANNEL_STEP)
-    
-    for idx in df_sorted.index:
-        bandwidth = df_sorted.loc[idx, 'bandwidth_mhz']
-        slots_needed = int(np.ceil(bandwidth / CHANNEL_STEP))
+    # NEW: Try multiple passes with different strategies
+    for pass_num in range(3):
+        logger.info(f"Greedy assignment pass {pass_num + 1}")
         
-        # Find conflicting stations that are already assigned
-        conflicting_assigned = []
-        for (i, j) in conflicts:
-            if i == idx and j in assigned_freqs:
-                conflicting_assigned.append(j)
-            elif j == idx and i in assigned_freqs:
-                conflicting_assigned.append(i)
-        
-        # Find available frequency range
-        blocked_ranges = []
-        for conf_idx in conflicting_assigned:
-            start_idx, end_idx = assigned_freqs[conf_idx]
-            blocked_ranges.append((start_idx, end_idx))
-        
-        # Find first available slot
-        assigned = False
-        for start_idx in range(len(channels) - slots_needed + 1):
-            end_idx = start_idx + slots_needed
+        for idx in df_sorted.index:
+            if idx in assigned_freqs:
+                continue
+                
+            bandwidth = df_sorted.loc[idx, 'bandwidth_mhz']
+            slots_needed = int(np.ceil(bandwidth / CHANNEL_STEP))
             
-            # Check if this range conflicts with any blocked range
-            conflict = False
-            for blocked_start, blocked_end in blocked_ranges:
-                if not (end_idx <= blocked_start or start_idx >= blocked_end):
-                    conflict = True
+            # Find conflicting stations that are already assigned
+            conflicting_assigned = []
+            for (i, j) in conflicts:
+                if i == idx and j in assigned_freqs:
+                    conflicting_assigned.append(j)
+                elif j == idx and i in assigned_freqs:
+                    conflicting_assigned.append(i)
+            
+            # NEW: Try different channel ranges based on pass
+            if pass_num == 0:
+                # First pass: try optimal placement
+                channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ, CHANNEL_STEP)
+            elif pass_num == 1:
+                # Second pass: try extended range
+                channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ + 50, CHANNEL_STEP)
+            else:
+                # Third pass: try with even more extended range
+                channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ + 100, CHANNEL_STEP)
+            
+            # Find available frequency range
+            blocked_ranges = []
+            for conf_idx in conflicting_assigned:
+                start_idx, end_idx = assigned_freqs[conf_idx]
+                blocked_ranges.append((start_idx, end_idx))
+            
+            # Find first available slot
+            assigned = False
+            for start_idx in range(len(channels) - slots_needed + 1):
+                end_idx = start_idx + slots_needed
+                
+                # Check if this range conflicts with any blocked range
+                conflict = False
+                for blocked_start, blocked_end in blocked_ranges:
+                    if not (end_idx <= blocked_start or start_idx >= blocked_end):
+                        conflict = True
+                        break
+                
+                if not conflict:
+                    assigned_freqs[idx] = (start_idx, end_idx)
+                    assigned = True
                     break
             
-            if not conflict:
-                assigned_freqs[idx] = (start_idx, end_idx)
-                assigned = True
-                break
-        
-        if not assigned:
-            logger.warning(f"Could not assign frequency to station {idx}")
+            if not assigned and pass_num == 2:
+                failed_assignments.append(idx)
     
-    # Convert to result format
-    assigned_start_freqs = []
-    assigned_end_freqs = []
+    # Log results
+    success_rate = (len(assigned_freqs) / len(df_component)) * 100
+    logger.info(f"Greedy assignment completed: {len(assigned_freqs)}/{len(df_component)} "
+               f"stations assigned ({success_rate:.1f}%)")
     
+    if failed_assignments:
+        logger.warning(f"Failed to assign: {failed_assignments}")
+    
+    # NEW: Convert to result format - include ALL stations
+    result_data = []
     for idx in df_component.index:
+        row = df_component.loc[idx].to_dict()
+        
         if idx in assigned_freqs:
             start_idx, end_idx = assigned_freqs[idx]
-            start_freq = channels[start_idx]
-            end_freq = channels[min(end_idx, len(channels)-1)]
-            assigned_start_freqs.append(start_freq)
-            assigned_end_freqs.append(end_freq)
+            # Determine which channel set was used
+            if start_idx < len(np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ, CHANNEL_STEP)):
+                channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ, CHANNEL_STEP)
+                row['allocation_method'] = 'Greedy_Heuristic'
+            else:
+                channels = np.arange(GLOBAL_LOW_FREQ, GLOBAL_HIGH_FREQ + 100, CHANNEL_STEP)
+                row['allocation_method'] = 'Greedy_Extended'
+            
+            row['optimized_start_freq_mhz'] = channels[start_idx]
+            row['optimized_end_freq_mhz'] = channels[min(end_idx, len(channels)-1)]
         else:
-            assigned_start_freqs.append(np.nan)
-            assigned_end_freqs.append(np.nan)
+            # NEW: Even failed assignments get a record
+            row['optimized_start_freq_mhz'] = np.nan
+            row['optimized_end_freq_mhz'] = np.nan
+            row['allocation_method'] = 'Failed'
+        
+        result_data.append(row)
     
-    df_result = df_component.copy()
-    df_result["optimized_start_freq_mhz"] = assigned_start_freqs
-    df_result["optimized_end_freq_mhz"] = assigned_end_freqs
-    df_result["allocation_method"] = "Greedy_Heuristic"
+    df_result = pd.DataFrame(result_data)
     
-    # Remove failed assignments
-    df_result = df_result.dropna(subset=['optimized_start_freq_mhz'])
-    
+    # Return all stations, even if some failed
     return df_result
 
 
@@ -889,13 +1057,23 @@ def plot_cluster(df_cluster, cluster_id, block_start=None, block_end=None, save_
     method_colors = {
         'Local_CP': 'lightblue',
         'Global_Optimization': 'lightgreen',
-        'Greedy_Heuristic': 'lightyellow'
+        'Greedy_Heuristic': 'lightyellow',
+        'Greedy_Extended': 'orange',
+        'Extended_Spectrum': 'lightcoral',
+        'No_Conflicts': 'lightgray',
+        'Failed': 'red'
     }
     
     # Sort by start frequency for better visualization
     df_plot = df_cluster.sort_values('optimized_start_freq_mhz')
     
     for i, (idx, row) in enumerate(df_plot.iterrows()):
+        if pd.isna(row.optimized_start_freq_mhz):
+            # Failed assignment
+            ax.text(0, i, f"{row.station_id} - FAILED", va="center", ha="left",
+                   fontsize=8, color='red', weight='bold')
+            continue
+            
         width = row.optimized_end_freq_mhz - row.optimized_start_freq_mhz
         color = method_colors.get(row.allocation_method, 'lightgray')
         
@@ -976,6 +1154,12 @@ def analyze_optimization_metrics(result_df, start_time=None):
     total_stations = len(result_df)
     print(f"\n📊 Total stations assigned frequencies: {total_stations}")
     
+    # Check for failed assignments
+    if 'allocation_method' in result_df.columns:
+        failed_count = (result_df['allocation_method'] == 'Failed').sum()
+        if failed_count > 0:
+            print(f"⚠️  Failed assignments: {failed_count}")
+    
     # Method analysis
     method_counts = result_df["allocation_method"].value_counts()
     print(f"\n🔧 Allocation methods used:")
@@ -984,31 +1168,35 @@ def analyze_optimization_metrics(result_df, start_time=None):
         print(f"   • {method}: {count} stations ({percentage:.1f}%)")
     
     # Spectrum usage analysis
-    min_freq = result_df["optimized_start_freq_mhz"].min()
-    max_freq = result_df["optimized_end_freq_mhz"].max()
-    total_spectrum_used = max_freq - min_freq
-    total_bandwidth = result_df["bandwidth_mhz"].sum()
+    # Filter out failed assignments
+    valid_df = result_df[result_df["optimized_start_freq_mhz"].notna()]
     
-    print(f"\n📡 Spectrum Usage Analysis:")
-    print(f"   • Frequency range: {min_freq:.1f} MHz - {max_freq:.1f} MHz")
-    print(f"   • Total spectrum span: {total_spectrum_used:.1f} MHz")
-    print(f"   • Total bandwidth demand: {total_bandwidth:.1f} MHz")
-    print(f"   • Available spectrum: {GLOBAL_HIGH_FREQ - GLOBAL_LOW_FREQ} MHz")
-    
-    if total_spectrum_used > 0:
-        efficiency = (total_bandwidth / total_spectrum_used) * 100
-        print(f"   • Spectrum efficiency: {efficiency:.1f}%")
+    if len(valid_df) > 0:
+        min_freq = valid_df["optimized_start_freq_mhz"].min()
+        max_freq = valid_df["optimized_end_freq_mhz"].max()
+        total_spectrum_used = max_freq - min_freq
+        total_bandwidth = valid_df["bandwidth_mhz"].sum()
         
-        # Compare to theoretical minimum
-        theoretical_min = total_bandwidth
-        overhead = ((total_spectrum_used - theoretical_min) / theoretical_min) * 100
-        print(f"   • Overhead vs theoretical minimum: {overhead:.1f}%")
+        print(f"\n📡 Spectrum Usage Analysis:")
+        print(f"   • Frequency range: {min_freq:.1f} MHz - {max_freq:.1f} MHz")
+        print(f"   • Total spectrum span: {total_spectrum_used:.1f} MHz")
+        print(f"   • Total bandwidth demand: {total_bandwidth:.1f} MHz")
+        print(f"   • Available spectrum: {GLOBAL_HIGH_FREQ - GLOBAL_LOW_FREQ} MHz")
+        
+        if total_spectrum_used > 0:
+            efficiency = (total_bandwidth / total_spectrum_used) * 100
+            print(f"   • Spectrum efficiency: {efficiency:.1f}%")
+            
+            # Compare to theoretical minimum
+            theoretical_min = total_bandwidth
+            overhead = ((total_spectrum_used - theoretical_min) / theoretical_min) * 100
+            print(f"   • Overhead vs theoretical minimum: {overhead:.1f}%")
     
     # State/region analysis
     state_stats = result_df.groupby("state").agg({
         "bandwidth_mhz": ["count", "sum"],
-        "optimized_start_freq_mhz": "min",
-        "optimized_end_freq_mhz": "max"
+        "optimized_start_freq_mhz": lambda x: x.min() if x.notna().any() else np.nan,
+        "optimized_end_freq_mhz": lambda x: x.max() if x.notna().any() else np.nan
     }).round(1)
     
     print(f"\n🗺️  State-level Analysis:")
@@ -1016,10 +1204,15 @@ def analyze_optimization_metrics(result_df, start_time=None):
         stats = state_stats.loc[state]
         station_count = stats[("bandwidth_mhz", "count")]
         total_bw = stats[("bandwidth_mhz", "sum")]
-        freq_span = stats[("optimized_end_freq_mhz", "max")] - \
-                   stats[("optimized_start_freq_mhz", "min")]
-        print(f"   • {state}: {station_count} stations, {total_bw}MHz demand, "
-              f"{freq_span}MHz span")
+        min_f = stats[("optimized_start_freq_mhz", "<lambda>")]
+        max_f = stats[("optimized_end_freq_mhz", "<lambda>")]
+        if pd.notna(min_f) and pd.notna(max_f):
+            freq_span = max_f - min_f
+            print(f"   • {state}: {station_count} stations, {total_bw}MHz demand, "
+                  f"{freq_span}MHz span")
+        else:
+            print(f"   • {state}: {station_count} stations, {total_bw}MHz demand, "
+                  f"no valid assignments")
     
     if len(state_stats) > 5:
         print(f"   • ... and {len(state_stats) - 5} more states")
@@ -1027,9 +1220,9 @@ def analyze_optimization_metrics(result_df, start_time=None):
     # Cluster analysis
     cluster_stats = result_df.groupby("cluster").agg({
         "bandwidth_mhz": ["count", "sum"],
-        "optimized_start_freq_mhz": "min",
-        "optimized_end_freq_mhz": "max",
-        "allocation_method": lambda x: x.value_counts().index[0]  # Most common method
+        "optimized_start_freq_mhz": lambda x: x.min() if x.notna().any() else np.nan,
+        "optimized_end_freq_mhz": lambda x: x.max() if x.notna().any() else np.nan,
+        "allocation_method": lambda x: x.value_counts().index[0] if len(x) > 0 else "None"
     }).round(1)
     
     print(f"\n🏘️  Cluster Analysis (showing first 5):")
@@ -1037,11 +1230,17 @@ def analyze_optimization_metrics(result_df, start_time=None):
         stats = cluster_stats.loc[cluster_id]
         station_count = stats[("bandwidth_mhz", "count")]
         total_bw = stats[("bandwidth_mhz", "sum")]
-        freq_span = stats[("optimized_end_freq_mhz", "max")] - \
-                   stats[("optimized_start_freq_mhz", "min")]
+        min_f = stats[("optimized_start_freq_mhz", "<lambda>")]
+        max_f = stats[("optimized_end_freq_mhz", "<lambda>")]
         method = stats[("allocation_method", "<lambda>")]
-        print(f"   • {cluster_id}: {station_count} stations, {total_bw}MHz demand, "
-              f"{freq_span}MHz span, {method}")
+        
+        if pd.notna(min_f) and pd.notna(max_f):
+            freq_span = max_f - min_f
+            print(f"   • {cluster_id}: {station_count} stations, {total_bw}MHz demand, "
+                  f"{freq_span}MHz span, {method}")
+        else:
+            print(f"   • {cluster_id}: {station_count} stations, {total_bw}MHz demand, "
+                  f"no valid assignments, {method}")
     
     # Frequency reuse analysis
     print(f"\n🔄 Frequency Reuse Analysis:")
@@ -1050,10 +1249,11 @@ def analyze_optimization_metrics(result_df, start_time=None):
     freq_overlaps = 0
     reuse_opportunities = 0
     
-    # Build conflict set for quick lookup
-    conflict_set = set()
-    for i, row1 in result_df.iterrows():
-        for j, row2 in result_df.iterrows():
+    # Only check valid assignments
+    valid_df = result_df[result_df["optimized_start_freq_mhz"].notna()].copy()
+    
+    for i, row1 in valid_df.iterrows():
+        for j, row2 in valid_df.iterrows():
             if j <= i:
                 continue
             
@@ -1138,13 +1338,31 @@ def run_optimizer(input_csv, output_csv, use_partitioning=True,
             "allocation_method"
         ]
         
-        # Add any missing columns
+        # Add any missing columns from original data
         for col in required_cols:
             if col not in result.columns and col in df.columns:
-                result[col] = df[col]
+                # Match up the data using index
+                result[col] = result.index.map(df[col])
         
-        # Sort by frequency for better visualization
-        result = result.sort_values("optimized_start_freq_mhz")
+        # NEW: Validate all stations are present
+        original_ids = set(df['station_id'])
+        result_ids = set(result['station_id'])
+        missing = original_ids - result_ids
+        if missing:
+            logger.error(f"⚠️ Missing stations in final result: {missing}")
+            logger.info("Attempting to add missing stations with failed status...")
+            
+            # Add missing stations with failed status
+            missing_indices = df[df['station_id'].isin(missing)].index
+            missing_df = df.loc[missing_indices].copy()
+            missing_df['optimized_start_freq_mhz'] = np.nan
+            missing_df['optimized_end_freq_mhz'] = np.nan
+            missing_df['allocation_method'] = 'Failed'
+            
+            result = pd.concat([result, missing_df], ignore_index=True)
+        
+        # Sort by frequency for better visualization (NaN values will be at end)
+        result = result.sort_values("optimized_start_freq_mhz", na_position='last')
         
         # Save results
         result.to_csv(output_csv, index=False)
@@ -1181,21 +1399,43 @@ def run_optimizer(input_csv, output_csv, use_partitioning=True,
 
 if __name__ == "__main__":
     # Configuration
-    input_csv = "test_spectrum_dataset.csv"
+    input_csv = "realistic_spectrum_dataset.csv"
     output_csv = "optimized_spectrum_improved.csv"
-    license_bands_file = None  # Set to path if you have a JSON file with license bands
-    
+    license_bands_file = None
+
     # Run the improved optimizer
     result = run_optimizer(
         input_csv=input_csv,
         output_csv=output_csv,
-        use_partitioning=True,  # Recommended for scalability
+        use_partitioning=True,
         license_bands_file=license_bands_file,
         plot_results=True
     )
-    
+
     if result is not None:
         print(f"\n✅ Successfully optimized {len(result)} stations")
         print(f"📁 Results saved to: {output_csv}")
+
+        import bea_mapper
+
+        geojson_path = "/Users/camronjacobson/Documents/GitHub/spectrum-optimizer-demo/bea.geojson"
+        csv_path = "/Users/camronjacobson/Documents/GitHub/spectrum-optimizer-demo/example_bea_data.csv"
+        output_geojson = "/Users/camronjacobson/Documents/GitHub/spectrum-optimizer-demo/bea_with_data.geojson"
+        output_csv = "/Users/camronjacobson/Documents/GitHub/spectrum-optimizer-demo/bea_with_data.csv"
+
+        # Load BEA polygons
+        bea_shapes = bea_mapper.load_bea_shapes(geojson_path)
+
+        # Merge with CSV
+        merged_gdf = bea_mapper.merge_bea_data(bea_shapes, csv_path)
+
+        # Save outputs
+        bea_mapper.save_merged_geojson(merged_gdf, output_geojson)
+        bea_mapper.save_merged_csv(merged_gdf, output_csv)
+
+        # Optional plot
+        bea_mapper.plot_bea_map(merged_gdf, "Count")
+
+        print("✅ BEA mapping completed successfully.")
     else:
         print("\n❌ Optimization failed - check the logs above for details")
