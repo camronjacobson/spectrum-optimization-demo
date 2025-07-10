@@ -4,7 +4,7 @@ Advanced spectrum optimization tool that minimizes frequency usage while prevent
 
 ![Spectrum Optimization Demo](bea_optimization_output/bea_spectrum_efficiency.png)
 
-## 🌟 Features
+## Features
 
 - **Constraint-based Optimization**: Uses geographic distance and antenna patterns to prevent interference
 - **Global Spectrum Reuse**: Maximizes frequency reuse across multiple license areas
@@ -12,7 +12,7 @@ Advanced spectrum optimization tool that minimizes frequency usage while prevent
 - **Interactive Visualizations**: HTML maps and comprehensive charts
 - **Scalable Architecture**: Handles nationwide datasets with intelligent partitioning
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -160,10 +160,10 @@ Contributions welcome! Please:
 
 ## 👥 Authors
 
-[Your name/team]
+[Camron Jacobson]
 
 ## 🙏 Acknowledgments
 
 - FCC for BEA geographic data
 - Google OR-Tools for optimization engine
-- [Any other acknowledgments]
+
