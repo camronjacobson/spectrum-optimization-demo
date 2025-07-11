@@ -71,10 +71,10 @@ BEAs are 173 geographic regions defined by the U.S. Department of Commerce. They
 
 ### Service Distribution Analysis
 
-![Radio Service Distribution](beat_integration/bea_optimization_output/radio_service_distribution.png)
+![Radio Service Distribution](bea_integration/bea_optimization_output/radio_service_distribution.png)
 *Types of wireless services analyzed*
 
-![License Status](beat_integration/bea_optimization_output/license_status_distribution.png)
+![License Status](bea_integration/bea_optimization_output/license_status_distribution.png)
 *Current status of wireless licenses in the dataset*
 
 ---
