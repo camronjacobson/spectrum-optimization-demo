@@ -25,9 +25,9 @@ I created a spectrum optimization tool that intelligently allocates frequencies 
 ## 🔧 Technical Decisions That Made a Difference
 One of my first technical crossroads came from Zach's initial suggestion: use center frequency and bandwidth.
 
-That's a common way to describe a radio channel—but for my purposes, it turned out messy. Why?
+That's a common and useful way to describe a radio channel—but for my purposes, it turned out messy. Why?
 
-To check if two signals overlap, you'd have to calculate start and end points every time:
+To check if two signals overlap, you'd have to calculate start and end points EVERY time:
 
 ```
 start = center - bandwidth/2
