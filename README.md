@@ -170,15 +170,15 @@ spectrum-optimization-demo/
 ```
 
 ## 📝 Lessons Learned
+
 ### Technical Takeaways
-✅ Don't blindly follow initial specs—center frequency seemed logical, but start/end was better.  
 ✅ Geography matters—radio waves follow physics, not political boundaries.  
-✅ Optimization tools can solve surprisingly complex problems.  
+✅ Optimization tools can solve surprisingly complex problems  
 ✅ Visuals make invisible concepts real.  
 ✅ Integrating disparate tools—optimization + GIS—unlocks huge value.
 
 ### 💼 Professional Growth
-- Learned how to turn vague requirements into concrete solutions
+- Learned how to translate high-level guidance into technical solutions while keeping communication open with my team
 - Grew confident making technical decisions and defending them
 - Got better at communicating complex ideas to non-technical audiences
 - Saw firsthand how tech intersects with regulatory and legal work
@@ -194,12 +194,10 @@ spectrum-optimization-demo/
 - **Zach** — For the challenging assignment and guidance throughout the project
 - **Phillip** — For the critical insight into BEA polygons and geographic data
 - **The open-source community** — Without these tools, none of this would have been possible
-- **FCC** — For making public data available to fuel real-world analysis
 
 ## 🔮 What's Next?
 If I were to keep developing this project, I'd love to:
 - Integrate terrain and weather effects into signal modeling
-- Optimize across multiple frequency bands simultaneously
 - Build a web interface for non-technical users
 - Create scenario testing tools for network planners
 - Include cost-benefit analysis for different allocation strategies
