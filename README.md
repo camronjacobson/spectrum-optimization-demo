@@ -41,15 +41,15 @@ BEAs are 173 geographic regions defined by the U.S. Department of Commerce. They
 - They reflect natural economic and commuting patterns
 - They provide consistent geographic units for analysis
 
-![BEA Map Overview](bea_optimization_output/bea_spectrum_efficiency.png)
+![BEA Map Overview](bea_integration/bea_optimization_output/bea_spectrum_efficiency.png)
 *Spectrum efficiency heat map across BEA regions - darker colors indicate better utilization*
 
 ### Visual Analysis by Region
 
-![BEA Station Distribution](bea_optimization_output/bea_station_distribution.png)
+![BEA Station Distribution](bea_integration/bea_optimization_output/bea_station_distribution.png)
 *Distribution of wireless stations across major BEAs*
 
-![Spectrum Timeline](bea_optimization_output/bea_spectrum_timeline.png)
+![Spectrum Timeline](bea_integration/bea_optimization_output/bea_spectrum_timeline.png)
 *Frequency allocation timeline showing how spectrum is distributed across stations*
 
 ---
@@ -58,7 +58,7 @@ BEAs are 173 geographic regions defined by the U.S. Department of Commerce. They
 
 ### Optimization Performance
 
-![Allocation Methods](bea_optimization_output/aws_allocation_methods.png)
+![Allocation Methods](bea_integration/bea_optimization_output/aws_allocation_methods.png)
 *Breakdown of optimization methods used - most stations optimized with advanced algorithms*
 
 | Metric | Result | Significance |
@@ -71,10 +71,10 @@ BEAs are 173 geographic regions defined by the U.S. Department of Commerce. They
 
 ### Service Distribution Analysis
 
-![Radio Service Distribution](bea_optimization_output/radio_service_distribution.png)
+![Radio Service Distribution](beat_integration/bea_optimization_output/radio_service_distribution.png)
 *Types of wireless services analyzed*
 
-![License Status](bea_optimization_output/license_status_distribution.png)
+![License Status](beat_integration/bea_optimization_output/license_status_distribution.png)
 *Current status of wireless licenses in the dataset*
 
 ---
@@ -157,7 +157,7 @@ The project generates several types of visualizations:
    - Service type breakdown
    - License status overview
 
-![Top Licensees](bea_optimization_output/top_licensees.png)
+![Top Licensees](beat_integration/bea_optimization_output/top_licensees.png)
 *Major license holders in the analyzed dataset*
 
 ---
