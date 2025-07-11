@@ -281,23 +281,6 @@ This project was developed for educational and research purposes. It demonstrate
 
 ---
 
-## 🚀 Getting Started Guide
-
-### For Quick Exploration
-If you just want to see the results:
-1. Download/clone this repository
-2. Navigate to `bea_optimization_output/`
-3. Open `interactive_spectrum_map.html` in your browser
-4. Explore the visualizations and reports
-
-### For Running Your Own Analysis
-Follow the installation instructions above, then:
-1. Prepare your station data in CSV format
-2. Update the input file path
-3. Run `python run_bea_optimization.py`
-4. Find results in the output directory
-
----
 
 ## 📚 Additional Resources
 
