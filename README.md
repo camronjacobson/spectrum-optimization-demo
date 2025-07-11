@@ -3,7 +3,7 @@
 
 **DLA Piper Internship Project** | *Summer 2025*
 
-![Spectrum Optimization Demo](bea_optimization_output/bea_spectrum_efficiency.png)
+![Spectrum Optimization Demo](bea_optimization_output/visulaizations/bea_spectrum_efficiency.png)
 
 ---
 
