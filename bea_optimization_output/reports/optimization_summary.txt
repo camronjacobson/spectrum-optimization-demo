@@ -1,0 +1,29 @@
+BEA SPECTRUM OPTIMIZATION SUMMARY REPORT
+============================================================
+
+Total Stations Processed: 354
+Successfully Optimized: 354 (100.0%)
+Failed Allocations: 0 (0.0%)
+
+Total BEA Regions with Stations: 144
+Average Stations per BEA: 2.4
+Average Spectrum Efficiency: 196.7%
+
+TOP 10 BEAs BY STATION COUNT:
+----------------------------------------
+90.0: 7.0 stations, 85.0 MHz, 283.3% efficiency
+75.0: 6.0 stations, 80.0 MHz, 320.0% efficiency
+86.0: 6.0 stations, 80.0 MHz, 533.3% efficiency
+6.0: 5.0 stations, 60.0 MHz, 400.0% efficiency
+53.0: 5.0 stations, 65.0 MHz, 260.0% efficiency
+116.0: 5.0 stations, 65.0 MHz, 433.3% efficiency
+124.0: 5.0 stations, 65.0 MHz, 260.0% efficiency
+164.0: 5.0 stations, 65.0 MHz, 433.3% efficiency
+176.0: 5.0 stations, 60.0 MHz, 400.0% efficiency
+1.0: 4.0 stations, 50.0 MHz, 333.3% efficiency
+
+
+OPTIMIZATION METHOD DISTRIBUTION:
+----------------------------------------
+No_Conflicts: 323 (91.2%)
+Global_Optimization: 31 (8.8%)
