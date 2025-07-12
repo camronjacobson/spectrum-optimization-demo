@@ -223,8 +223,8 @@ The tool will:
 - Generate maps and reports
 
 ## 👤 About Me
-I'm Camron Jacobson, a computer science student fascinated by the intersection of technology, policy, and real-world impact.
+I'm Camron Jacobson, a Data Science student fascinated by the intersection of technology, policy, and real-world impact.
 
-During this internship, I learned how powerful data and optimization can be—and how much they depend on clear communication and creative problem-solving.
+During this internship, I learned how powerful data and optimization can be and how much they depend on clear communication and creative problem-solving.
 
 Thanks for exploring my project! 
