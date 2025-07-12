@@ -20,7 +20,8 @@ So, what did I actually build?
 
 I created a spectrum optimization tool that intelligently allocates frequencies among wireless stations across the United States.
 
-**By the end of my internship**, I had optimized frequency usage for **354 wireless stations**, achieving up to **85% spectrum efficiency** through geographic analysis and clever frequency reuse.
+**So far**, I optimized frequency usage for **354 wireless stations**, achieving up to **85% spectrum efficiency** through geographic analysis and clever frequency reuse.
+**By the end of my internship** ()
 
 ## 🔧 Technical Decisions That Made a Difference
 One of my first technical crossroads came from Zach's initial suggestion: use center frequency and bandwidth.
