@@ -1,0 +1,217 @@
+# fcc_data_config.yaml
+# Configuration for different FCC data formats
+
+# Standard FCC data format mappings
+data_formats:
+  uls_license:
+    description: "FCC Universal Licensing System (ULS) License Data"
+    column_mappings:
+      call_sign: station_id
+      entity_name: licensee
+      grant_date: grant_date
+      expiration_date: expiration_date
+      radio_service_code: service_type
+      frequency_assigned: assigned_freq_mhz
+      state: state
+      city: city
+    
+  uls_antenna:
+    description: "FCC ULS Antenna Structure Registration"
+    column_mappings:
+      unique_system_identifier: station_id
+      latitude_degrees: y_coord
+      longitude_degrees: x_coord
+      antenna_structure_height: height_meters
+      elevation_amsl: elevation_amsl
+    
+  am_station:
+    description: "AM Broadcast Station Data"
+    column_mappings:
+      call_sign: station_id
+      facility_id: facility_id
+      licensee_name: licensee
+      community_city: city
+      community_state: state
+      latitude: y_coord
+      longitude: x_coord
+      power_day: power_watts_day
+      power_night: power_watts_night
+      frequency: assigned_freq_mhz
+    defaults:
+      bandwidth_mhz: 0.01
+      service_type: AM
+      
+  fm_station:
+    description: "FM Broadcast Station Data"
+    column_mappings:
+      call_sign: station_id
+      facility_id: facility_id
+      licensee: licensee
+      city: city
+      state: state
+      latitude: y_coord
+      longitude: x_coord
+      erp_kw: power_kw
+      frequency: assigned_freq_mhz
+      antenna_height_amsl: height_amsl
+    defaults:
+      bandwidth_mhz: 0.2
+      service_type: FM
+      
+  tv_station:
+    description: "TV Broadcast Station Data"
+    column_mappings:
+      call_sign: station_id
+      facility_id: facility_id
+      licensee: licensee
+      city: city
+      state: state
+      latitude: y_coord
+      longitude: x_coord
+      erp: power_watts
+      channel: channel_number
+      frequency: assigned_freq_mhz
+    defaults:
+      bandwidth_mhz: 6.0
+      service_type: TV
+
+  aws_license:
+    description: "Advanced Wireless Service (AWS) License Data"
+    column_mappings:
+      callsign: station_id
+      name: licensee
+      FRN: frn
+      expiration_date: expiration_date
+      radio_service: service_type
+      market: market_area
+    defaults:
+      bandwidth_mhz: 10.0
+      service_type: AWS
+      
+  generic_fcc:
+    description: "Generic FCC data format"
+    column_mappings:
+      callsign: station_id
+      callsigns: station_id
+      name: licensee
+      entity_name: licensee
+      lat: y_coord
+      latitude: y_coord
+      lon: x_coord
+      lng: x_coord
+      longitude: x_coord
+    defaults:
+      bandwidth_mhz: 10.0
+
+# Service-specific configurations
+service_configs:
+  AM:
+    bandwidth_mhz: 0.01
+    frequency_range: [530, 1700]
+    typical_power_range: [250, 50000]  # watts
+    interference_protection: 
+      co_channel: 50  # km
+      adjacent_channel: 30
+    antenna_pattern: omnidirectional
+    
+  FM:
+    bandwidth_mhz: 0.2
+    frequency_range: [88, 108]
+    typical_power_range: [100, 100000]  # watts
+    interference_protection:
+      co_channel: 100  # km
+      adjacent_channel: 50
+    antenna_pattern: variable
+    
+  TV:
+    bandwidth_mhz: 6.0
+    frequency_range: [54, 806]
+    channel_assignments:
+      2-6: [54, 88]
+      7-13: [174, 216]
+      14-69: [470, 806]
+    typical_power_range: [1000, 1000000]  # watts
+    antenna_pattern: directional
+    
+  AWS:
+    bandwidth_blocks:
+      A: {bandwidth_mhz: 10, frequency_range: [1710, 1720]}
+      B: {bandwidth_mhz: 10, frequency_range: [1720, 1730]}
+      C: {bandwidth_mhz: 10, frequency_range: [1730, 1735]}
+      D: {bandwidth_mhz: 10, frequency_range: [2110, 2120]}
+      E: {bandwidth_mhz: 10, frequency_range: [2120, 2130]}
+      F: {bandwidth_mhz: 10, frequency_range: [1735, 1740]}
+    antenna_pattern: sectored
+    typical_sectors: 3
+    
+  LM:  # Land Mobile
+    bandwidth_options: [0.0125, 0.025, 0.05]  # 12.5, 25, 50 kHz
+    frequency_bands:
+      VHF_Low: [30, 50]
+      VHF_High: [138, 174]
+      UHF: [420, 512]
+      700MHz: [758, 775]
+      800MHz: [806, 824]
+    antenna_pattern: omnidirectional
+
+# Geographic configurations
+geographic_configs:
+  coordinate_systems:
+    - EPSG:4326  # WGS84 (most common)
+    - EPSG:4269  # NAD83
+    
+  area_classification:
+    urban:
+      population_density_min: 1000  # per sq km
+      typical_distance_threshold: 5  # km
+      
+    suburban:
+      population_density_range: [200, 1000]
+      typical_distance_threshold: 30
+      
+    rural:
+      population_density_max: 200
+      typical_distance_threshold: 50
+
+# Data quality checks
+quality_checks:
+  required_fields:
+    - station_id
+    - x_coord
+    - y_coord
+    - bandwidth_mhz
+    
+  coordinate_bounds:
+    continental_us:
+      x_min: -125.0
+      x_max: -66.0
+      y_min: 24.0
+      y_max: 49.0
+    alaska:
+      x_min: -180.0
+      x_max: -130.0
+      y_min: 52.0
+      y_max: 72.0
+    hawaii:
+      x_min: -161.0
+      x_max: -154.0
+      y_min: 18.0
+      y_max: 23.0
+      
+  bandwidth_limits:
+    min: 0.001  # 1 kHz
+    max: 100    # 100 MHz
+
+# API endpoints (placeholders - replace with actual endpoints)
+api_endpoints:
+  uls_license_search: "https://apps.fcc.gov/oetcf/uls/index.cfm"
+  antenna_structure: "https://www.fcc.gov/antenna-structure-registration-asr"
+  broadcast_query: "https://apps.fcc.gov/general/Menu.cfm"
+  
+# Processing options
+processing_options:
+  batch_size: 1000
+  coordinate_cache_ttl: 86400  # seconds (24 hours)
+  max_geocoding_rate: 1  # requests per second
+  use_parallel_processing: true
+  num_workers: 4
