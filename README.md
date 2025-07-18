@@ -4,11 +4,11 @@
 
 ---
 
-## 🎯 Executive Summary
+##  Executive Summary
 
 During my summer 2025 internship at DLA Piper, I developed a spectrum optimization system that demonstrates how intelligent frequency reuse can save billions in spectrum costs. This project solves a critical telecommunications challenge: efficiently allocating radio frequencies to wireless stations while preventing interference.
 
-### 🏆 Key Achievements
+###  Key Achievements
 
 - **Optimized spectrum allocation** for wireless stations across BEA (Business Economic Area) regions
 - **Achieved up to 307× frequency reuse factor** (in simulated scenarios with BEA-based station generation)
@@ -36,7 +36,7 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 
 ---
 
-## 🧩 The Technical Challenge
+##  The Technical Challenge
 
 ### Understanding the Problem
 
@@ -381,7 +381,7 @@ def _generate_distributed_points(self, geometry, num_points, density):
 
 ---
 
-## 🚧 Implementation Journey & Challenges
+##  Implementation Journey & Challenges
 
 ### Challenge 1: The 6,000+ Station Mystery
 
@@ -485,7 +485,7 @@ if component_size == 1:
 
 ---
 
-## 🎨 Interactive Visualizations
+##  Interactive Visualizations
 
 ### Viewing the Interactive HTML Report
 
@@ -575,7 +575,7 @@ The visualization suite uses:
 
 ---
 
-## 🚧 Work in Progress: 10,000 AM Station Dataset
+##  Work in Progress: 10,000 AM Station Dataset
 
 ### Current Implementation Status
 
@@ -583,13 +583,13 @@ I'm actively working on processing a comprehensive dataset of 10,000 real AM sta
 
 ### Progress So Far
 
-✅ **Successfully tested with 50 AM stations**:
+ **Successfully tested with 50 AM stations**:
 - Confirmed the optimization pipeline works with real coordinates
 - Interactive map visualization functioning properly
 - Successfully mapped stations to BEA regions using spatial joins (since AM data lacks BEA codes)
 - Generated proper frequency assignments with realistic interference patterns
 
-⚠️ **Challenges with full dataset**:
+ **Challenges with full dataset**:
 - Some visualizations need adjustment for real coordinate data
 - Data cleaning required before processing the full 10,000 stations
 - Processing time significantly increased: ~1 hour for full optimization (vs minutes for synthetic data)
@@ -676,7 +676,7 @@ This real-world validation is crucial for demonstrating that my optimization alg
 
 ---
 
-## 🏆 Technical Wins & Breakthroughs
+##  Technical Wins & Breakthroughs
 
 ### 1. **Smart Data Adapter System**
 
@@ -719,7 +719,7 @@ Successfully integrated complex geographic data:
 
 ---
 
-## 🚀 Future Improvements
+##  Future Improvements
 
 ### Phase 1: Enhanced Propagation Modeling
 - Integrate terrain elevation data for accurate signal propagation
@@ -743,7 +743,7 @@ Successfully integrated complex geographic data:
 
 ---
 
-## 🛠️ Installation & Usage Guide
+##  Installation & Usage Guide
 
 ### Prerequisites
 
@@ -827,7 +827,7 @@ optimization_results/
 
 ---
 
-## 💻 Technical Stack
+##  Technical Stack
 
 ### Core Technologies
 
@@ -859,7 +859,7 @@ shapely>=2.0.0
 
 ---
 
-## 📈 Project Impact & Lessons Learned
+## Project Impact & Lessons Learned
 
 ### Technical Achievements
 
@@ -885,26 +885,20 @@ While the 307× reuse factor was achieved with synthetic data, the project demon
 
 ---
 
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 This project wouldn't have been possible without:
 
 - **Zach** (Supervisor) - For the challenging assignment and guidance throughout
 - **Phillip** - For BEA geographic insights and helping me understand the data
 - **DLA Piper Telecom Team** - For domain expertise and real-world context
-- **Open Source Community** - OR-Tools, GeoPandas, and Folium maintainers
+- **Open Source Community** 
 
 ---
 
 ## 📬 Contact & Collaboration
 
 **Author**: Camron Jacobson  
-**Email**: camron.r.jacobson@gmail.com  
-**LinkedIn**: [linkedin.com/in/camronjacobson](https://linkedin.com/in/camronjacobson)  
-**GitHub**: [github.com/camronjacobson](https://github.com/camronjacobson)
-
-*Interested in spectrum optimization or have questions about the implementation? I'd love to connect!*
-
 ---
 
-> "This project taught me that real-world optimization isn't just about algorithms—it's about understanding the data, adapting to constraints, and creating tools that clearly demonstrate value. The journey from 307× theoretical reuse to practical implementation with real station data has been an incredible learning experience." - Camron Jacobson, July 2025
+
