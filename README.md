@@ -18,8 +18,6 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 
 ### 📊 Viewing the Interactive Station Map
 
-### 📊 Viewing the Interactive Station Map
-
 **⬇️ Download Options:**
 - [Download Interactive Map](interactive_station_map.html?raw=true)
 - Or right-click the link above and select "Save Link As..."
