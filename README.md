@@ -18,7 +18,16 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 
 ### 📊 Viewing the Interactive Station Map
 
-**⬇️ [Click here to download the Interactive Station Map](https://github.com/camronjacobson/spectrum-optimization-demo/raw/main/interactive_station_map.html)**
+### 📊 Viewing the Interactive Station Map
+
+**⬇️ Download Options:**
+- [Download Interactive Map](interactive_station_map.html?raw=true)
+- Or right-click the link above and select "Save Link As..."
+
+**Quick Instructions:**
+1. Download the file using one of the methods above
+2. Double-click the downloaded HTML file to open it in your browser
+3. Explore the interactive map with clickable stations and BEA regions!
 
 **Quick Instructions:**
 1. Click the download link above
