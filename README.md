@@ -23,19 +23,9 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 **⬇️ Download Options:**
 - [Download Interactive Map](interactive_station_map.html?raw=true)
 - Or right-click the link above and select "Save Link As..."
+- As of right now, the html map I would like show is too large (32MB) so I can only display the AM 50 stations dataset.
 
-**Quick Instructions:**
-1. Download the file using one of the methods above
-2. Double-click the downloaded HTML file to open it in your browser
-3. Explore the interactive map with clickable stations and BEA regions!
 
-**Quick Instructions:**
-1. Click the download link above
-2. The HTML file will download to your computer
-3. Double-click the downloaded file to open it in your browser
-4. Explore the interactive map with clickable stations and BEA regions!
-
-*Note: GitHub cannot display large interactive HTML files directly, so downloading is required.*
 ---
 
 ## 📚 Table of Contents
