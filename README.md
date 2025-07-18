@@ -16,9 +16,8 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 - **Developed smart data adapters** that handle multiple FCC data formats automatically
 - **Created professional visualizations** demonstrating cost savings and efficiency gains
 
-![BEA Spectrum Optimization Report](https://github.com/camronjacobson/spectrum-optimization-demo/raw/main/screenshots/optimization-report.png)
-*Interactive HTML report showing 307× frequency reuse achievement in simulated BEA scenario*
-
+### 🎯 [View Full Interactive Optimization Report](optimization_results/run_20250718_143200/visualizations/complete_optimization_report.html)
+*Download and open in your browser to explore the interactive visualizations showing 307× frequency reuse achievement in simulated BEA scenario*
 ---
 
 ## 📚 Table of Contents
