@@ -1,0 +1,51 @@
+station_id,x_coord,y_coord,bandwidth_mhz,azimuth_deg,cluster,state,area_type,licensee,city
+WASG        ,88.09416667,30.74602778,0.01,0.0,AL_0,AL ,suburban,ALABAMA RADIO CORPORATION                                                   ,DAPHNE                   
+KVIP        ,122.2813889,40.62347222,0.01,0.0,CA_0,CA ,suburban,PACIFIC CASCADE COMMUNICATIONS CORPORATION                                  ,REDDING                  
+KRXA        ,121.5424444,36.65997222,0.01,0.0,CA_0,CA ,suburban,EL SEMBRADOR MINISTRIES                                                     ,CARMEL VALLEY            
+WFLF        ,81.66175,28.48166667,0.01,0.0,FL_0,FL ,suburban,"IHM LICENSES, LLC                                                           ",PINE HILLS               
+WDAK        ,84.9505,32.43291667,0.01,0.0,GA_0,GA ,suburban,"IHM LICENSES, LLC                                                           ",COLUMBUS                 
+KWMT        ,94.20941667,42.49580556,0.01,0.0,IA_0,IA ,suburban,ALPHA 3E LICENSEE LLC,FORT DODGE               
+KMLB        ,92.06430556,32.62208333,0.01,0.0,LA_0,LA ,suburban,"HOLLADAY BROADCASTING OF LOUISIANA, LLC                                     ",MONROE                   
+WGOP        ,75.56936111,38.05316667,0.01,0.0,MD_0,MD ,suburban,"THE WATERS GROUP, LLC                                                       ",POCOMOKE CITY            
+WXYG        ,94.13944444,45.60497222,0.01,0.0,MN_0,MN ,suburban,HERBERT M. HOPPE REVOCABLE TRUST                                            ,SAUK RAPIDS              
+WRGC        ,83.24875,35.39205556,0.01,0.0,NC_0,NC ,suburban,"FIVE FORTY BROADCASTING COMPANY, LLC                                        ",SYLVA                    
+WETC        ,78.43194444,35.86930556,0.01,0.0,NC_0,NC ,suburban,"DIVINE MERCY RADIO, INC.                                                    ",WENDELL-ZEBULON          
+WETC        ,78.43194444,35.86930556,0.01,0.0,NC_0,NC ,suburban,"DIVINE MERCY RADIO, INC.                                                    ",WENDELL-ZEBULON          
+KNMX        ,105.1719444,35.57366667,0.01,0.0,NM_0,NM ,suburban,"SANGRE DE CRISTO BROADCASTING CO., INC.                                     ",LAS VEGAS                
+WBWD        ,73.21344444,40.75177778,0.01,0.0,NY_0,NY ,suburban,"OM SAI BROADCASTING, LLC                                                    ",ISLIP                    
+WWCS        ,80.18505556,40.2895,0.01,0.0,PA_0,PA ,suburban,BIRACH BROADCASTING CORPORATION                                             ,CANONSBURG               
+WYNN        ,79.80811111,34.21822222,0.01,0.0,SC_0,SC ,suburban,CUMULUS LICENSING LLC                                                       ,FLORENCE                 
+WKFN        ,87.32555556,36.542,0.01,0.0,TN_0,TN ,suburban,"SAGA COMMUNICATIONS OF TUCKESSEE, LLC                                       ",CLARKSVILLE              
+KDFT        ,96.57472222,32.51319444,0.01,0.0,TX_0,TX ,suburban,"WAY BROADCASTING LICENSEE, LLC                                              ",FERRIS                   
+WGTH        ,81.78261111,37.08372222,0.01,0.0,VA_0,VA ,suburban,"HIGH KNOB BROADCASTERS, INC.                                                ",RICHLANDS                
+WAUK        ,88.15313889,43.33333333,0.01,0.0,WI_0,WI ,suburban,"CIVIC MEDIA, INC.                                                           ",JACKSON                  
+WASG        ,88.09444444,30.74575,0.01,0.0,AL_0,AL ,suburban,ALABAMA RADIO CORPORATION                                                   ,DAPHNE                   
+KVIP        ,122.2813889,40.62347222,0.01,0.0,CA_0,CA ,suburban,PACIFIC CASCADE COMMUNICATIONS CORPORATION                                  ,REDDING                  
+KRXA        ,121.5424444,36.65997222,0.01,0.0,CA_0,CA ,suburban,EL SEMBRADOR MINISTRIES                                                     ,CARMEL VALLEY            
+WFLF        ,81.66175,28.48166667,0.01,0.0,FL_0,FL ,suburban,"IHM LICENSES, LLC                                                           ",PINE HILLS               
+WDAK        ,84.9505,32.43291667,0.01,0.0,GA_0,GA ,suburban,"IHM LICENSES, LLC                                                           ",COLUMBUS                 
+KWMT        ,94.20941667,42.49580556,0.01,0.0,IA_0,IA ,suburban,ALPHA 3E LICENSEE LLC,FORT DODGE               
+KMLB        ,92.06430556,32.62208333,0.01,0.0,LA_0,LA ,suburban,"HOLLADAY BROADCASTING OF LOUISIANA, LLC                                     ",MONROE                   
+WGOP        ,75.56936111,38.05316667,0.01,0.0,MD_0,MD ,suburban,"THE WATERS GROUP, LLC                                                       ",POCOMOKE CITY            
+WXYG        ,94.13944444,45.60497222,0.01,0.0,MN_0,MN ,suburban,HERBERT M. HOPPE REVOCABLE TRUST                                            ,SAUK RAPIDS              
+WRGC        ,83.24875,35.39205556,0.01,0.0,NC_0,NC ,suburban,"FIVE FORTY BROADCASTING COMPANY, LLC                                        ",SYLVA                    
+WETC        ,78.43194444,35.86930556,0.01,0.0,NC_0,NC ,suburban,"DIVINE MERCY RADIO, INC.                                                    ",WENDELL-ZEBULON          
+WETC        ,78.43194444,35.86930556,0.01,0.0,NC_0,NC ,suburban,"DIVINE MERCY RADIO, INC.                                                    ",WENDELL-ZEBULON          
+KNMX        ,105.1719444,35.57366667,0.01,0.0,NM_0,NM ,suburban,"SANGRE DE CRISTO BROADCASTING CO., INC.                                     ",LAS VEGAS                
+WBWD        ,73.21344444,40.75177778,0.01,0.0,NY_0,NY ,suburban,"OM SAI BROADCASTING, LLC                                                    ",ISLIP                    
+WWCS        ,80.18505556,40.2895,0.01,0.0,PA_0,PA ,suburban,BIRACH BROADCASTING CORPORATION                                             ,CANONSBURG               
+WYNN        ,79.80811111,34.21822222,0.01,0.0,SC_0,SC ,suburban,CUMULUS LICENSING LLC                                                       ,FLORENCE                 
+WKFN        ,87.32555556,36.542,0.01,0.0,TN_0,TN ,suburban,"SAGA COMMUNICATIONS OF TUCKESSEE, LLC                                       ",CLARKSVILLE              
+KDFT        ,96.57416667,32.51458333,0.01,0.0,TX_0,TX ,suburban,"WAY BROADCASTING LICENSEE, LLC                                              ",FERRIS                   
+WGTH        ,81.78261111,37.08372222,0.01,0.0,VA_0,VA ,suburban,"HIGH KNOB BROADCASTERS, INC.                                                ",RICHLANDS                
+WAUK        ,88.15313889,43.33333333,0.01,0.0,WI_0,WI ,suburban,"CIVIC MEDIA, INC.                                                           ",JACKSON                  
+KTZN        ,149.8283056,61.16555556,0.01,0.0,AK_0,AK ,suburban,"IHM LICENSES, LLC                                                           ",ANCHORAGE                
+KTZN        ,149.8283056,61.16555556,0.01,0.0,AK_0,AK ,suburban,"IHM LICENSES, LLC                                                           ",ANCHORAGE                
+KFYI        ,112.0068056,33.38811111,0.01,0.0,AZ_0,AZ ,suburban,"IHM LICENSES, LLC                                                           ",PHOENIX                  
+KUZZ        ,118.9395556,35.34025,0.01,0.0,CA_0,CA ,suburban,"BUCK OWENS PRODUCTION COMPANY, INCORPORATED                                 ",BAKERSFIELD              
+KLLV        ,108.0823056,37.18388889,0.01,0.0,CO_0,CO ,suburban,"DAYSTAR RADIO, LTD.                                                         ",BREEN                    
+KRAI        ,107.5317222,40.54580556,0.01,0.0,CO_0,CO ,suburban,"BLIZZARD BROADCASTING, LLC                                                  ",CRAIG                    
+WAYR        ,81.78980556,30.07275,0.01,0.0,FL_0,FL ,suburban,GOOD TIDINGS TRUST INC.                                                     ,FLEMING ISLAND           
+WDUN        ,83.79211111,34.33566667,0.01,0.0,GA_0,GA ,suburban,JACOBS MEDIA CORPORATION                                                    ,GAINESVILLE              
+KNUI        ,156.4641667,20.78855556,0.01,0.0,HI_0,HI ,suburban,"PACIFIC RADIO GROUP, INC.                                                   ",WAILUKU                  
+KFRM        ,97.66058333,39.43444444,0.01,0.0,KS_0,KS ,suburban,"TAYLOR COMMUNICATIONS, INC.                                                 ",SALINA                   
