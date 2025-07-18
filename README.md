@@ -16,8 +16,17 @@ During my summer 2025 internship at DLA Piper, I developed a spectrum optimizati
 - **Developed smart data adapters** that handle multiple FCC data formats automatically
 - **Created professional visualizations** demonstrating cost savings and efficiency gains
 
-### 🎯 [View Interactive Station Map](interactive_station_map.html)
-*Download and open in your browser to explore the interactive map showing frequency assignments and BEA regions*
+### 📊 Viewing the Interactive Station Map
+
+**⬇️ [Click here to download the Interactive Station Map](https://github.com/camronjacobson/spectrum-optimization-demo/raw/main/interactive_station_map.html)**
+
+**Quick Instructions:**
+1. Click the download link above
+2. The HTML file will download to your computer
+3. Double-click the downloaded file to open it in your browser
+4. Explore the interactive map with clickable stations and BEA regions!
+
+*Note: GitHub cannot display large interactive HTML files directly, so downloading is required.*
 ---
 
 ## 📚 Table of Contents
